@@ -4,9 +4,8 @@ const authController = require("./auth/authController");
 
 router.use("/auth", authController);
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
-});
+const userRoutes = require('./userRoutes');
+
+router.use('/', userRoutes);
 
 module.exports = router;
