@@ -105,32 +105,11 @@ create table if not exists Mouvement
             on update cascade on delete set null
 );
 
-
-drop view if exists V_CATEGORIE;
-create view V_CATEGORIE as
-select `c`.`nomCategorie` AS `nomCategorie`, `sc`.`nomSousCategorie` AS `nomSousCategorie`
-from Categorie `c`
-         join SousCategorie `sc`
-where `sc`.`idcategorie` = `c`.`idCategorie`
-order by `c`.`nomCategorie`, `sc`.`nomSousCategorie`;
-
-drop view if exists V_MOUVEMENT;
-
-create view V_MOUVEMENT as
-select `m`.`idMouvement`         AS `idMouvement`,
-       `m`.`dateMouvement`       AS `dateMouvement`,
-       `c`.`descriptionCompte`   AS `descriptionCompte`,
-       `c`.`nomBanque`           AS `nomBanque`,
-       `t`.`nomTiers`            AS `nomTiers`,
-       `ctg`.`nomCategorie`      AS `nomCategorie`,
-       `sctg`.`nomSousCategorie` AS `nomSousCategorie`,
-       `m`.`montant`             AS `montant`
-from ((((mouvement `m` join compte `c`
-         on (`m`.`idCompte` = `c`.`idCompte`)) join tiers `t`
-        on (`m`.`idTiers` = `t`.`idTiers`)) join categorie `ctg`
-       on (`m`.`idCategorie` = `ctg`.`idCategorie`)) left join souscategorie `sctg`
-      on (`m`.`idSousCategorie` = `sctg`.`idSousCategorie`))
-order by `m`.`dateMouvement`;
+INSERT INTO Categorie (nomCategorie, dateHeureMAJ, dateHeureCreation) VALUES ('Alimentation', NOW(), NOW()),  ('Transports', NOW(),NOW());
+INSERT INTO SousCategorie (nomSousCategorie, idCategorie, dateHeureMAJ, dateHeureCreation) VALUES ('Courses', 1, NOW(), NOW()), ('Essence', 2, NOW(), NOW());
+INSERT INTO Utilisateur (nomUtilisateur, prenomUtilisateur, login, mdp, dateHeureCreation, dateHeureMAJ, ville, codePostal) VALUES ('BULTEZ', 'Matheo', 'mbultez','testmdp',NOW(),NOW(),'Labeuvriere', '62122');
+INSERT INTO Compte (descriptionCompte, nomBanque,idUtilisateur, dateHeureMAJ,dateHeureCreation) VALUES ('Compte Courant','BNP',1, NOW(),NOW());
+INSERT INTO Tiers (nomTiers, dateHeureMAJ,dateHeureCreation,idUtilisateur) VALUES ('Supermarché', NOW(),NOW(),1);
 
 DROP TRIGGER IF EXISTS TRG_BEFORE_UPDATE_CATEGORIE;
 DROP TRIGGER IF EXISTS TRG_BEFORE_UPDATE_SOUS_CATEGORIE;
