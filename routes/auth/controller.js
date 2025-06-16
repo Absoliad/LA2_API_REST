@@ -38,3 +38,37 @@ exports.login = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.register = async (req, res, next) => {
+  try {
+    const { nom, prenom, email, password } = req.body;
+    // Vérifier si l'utilisateur existe déjà
+    // const existingUser = await dbPersonnes.getPersonneByEmail(email);
+    // if (existingUser) {
+    //   return res.status(400).json({ message: 'Utilisateur déjà existant' });
+    // }
+    
+    // Hacher le mot de passe
+    const passwordHash = await argon2.hash(password);
+    
+    // Enregistrer l'utilisateur dans la base de données
+    // const newUser = await dbPersonnes.createPersonne({
+    //   nom,
+    //   prenom,
+    //   email,
+    //   password_hash: passwordHash
+    // });
+    
+    return res.status(201).json({ 
+      message: 'Utilisateur créé avec succès',
+      user: {
+        id: newUser.id,
+        nom: newUser.nom,
+        prenom: newUser.prenom,
+        email: newUser.email
+      }
+    });
+  } catch (err) {
+    next(err);
+  }
+}
