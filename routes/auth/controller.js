@@ -15,7 +15,7 @@ exports.login = async (req, res, next) => {
       return res.status(401).json({ message: 'Email ou mot de passe incorrect' });
     }
     const payload = {
-      id: personne.id,
+      idUtilisateur: personne.idUtilisateur,
       nomUtilisateur: personne.nomUtilisateur,
       prenomUtilisateur: personne.prenomUtilisateur,
       login: personne.login,
@@ -27,7 +27,7 @@ exports.login = async (req, res, next) => {
     return res.status(200).json({ 
       token : token,
       user : {
-        id: personne.id,
+        idUtilisateur: personne.idUtilisateur,
       nomUtilisateur: personne.nomUtilisateur,
       prenomUtilisateur: personne.prenomUtilisateur,
       login: personne.login,
@@ -64,7 +64,7 @@ exports.register = async (req, res, next) => {
     return res.status(201).json({ 
       message: 'Utilisateur créé avec succès',
       user: {
-        id: newUser.id,
+        idUtilisateur: newUser.idUtilisateur,
         nom: newUser.nom,
         prenom: newUser.prenom,
         email: newUser.email
