@@ -30,6 +30,26 @@ const options = {
           properties: {
             token: { type: 'string', example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' }
           }
+        },
+        Auth: {
+          type: 'object',
+          required: ['login', 'mdp'],
+          properties: {
+            login: { type: 'string', exemple: 'test'},
+            mdp: { type: 'string', exemple: 'test'}
+          }
+        },
+        Register: {
+          type: 'object',
+          required: ['nomUtilisateur', 'prenomUtilisateur', 'login', 'mdp'],
+          properties: {
+            nomUtilisateur: { type: 'string', example: 'Dupont' },
+            prenomUtilisateur: { type: 'string', example: 'Jean' },
+            login: { type: 'string', example: 'test' },
+            mdp: { type: 'string', example: 'test' },
+            ville: { type: 'string', example: 'Paris' },
+            codePostal: { type: 'string', example: '75000' }
+          },
         }
       }
     },
