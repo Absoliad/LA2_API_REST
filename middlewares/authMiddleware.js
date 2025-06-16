@@ -10,12 +10,11 @@ const authenticate = () => {
 
     try {
       const decoded = jwt.verify(token, process.env.SECRET_KEY);
-
       // On suppose que le payload contient un objet user avec un champ role
       if (!decoded) {
         return res.status(403).json({ message: "Accès interdit : utilisateur ou rôle manquant." });
       }
-      req.user = decoded.user;
+      req.user = decoded;
       next();
     } catch (err) {
       console.error("Erreur de vérification du token :", err);
