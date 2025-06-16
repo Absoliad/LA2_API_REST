@@ -40,36 +40,26 @@ const validate = validations => [
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 token:
- *                   type: string
+ *               $ref: '#/components/schemas/Token'
  */
 router.post('/login', validate(validators.login), controller.login);
 
 
-// /**
-//  * @swagger
-//  * /auth/register:
-//  *   post:
-//  *    summary: Inscription utilisateur
-//  *   tags: [Auth]
-//  *  requestBody:
-//  *    required: true
-//  *   content:
-//  *     application/json:
-//  *      schema:
-//  *        $ref: '#/components/schemas/Register'
-//  * * responses:
-//  *       200:
-//  *         description: Token JWT retourné
-//  *         content:
-//  *           application/json:
-//  *             schema:
-//  *               type: object
-//  *               properties:
-//  *                 token:
-//  *                   type: string
-//  */
-// router.post('/register', validate(validators.register), controller.register);
+/**
+ * @swagger
+ * /auth/register:
+ *   post:
+ *     summary: Inscription utilisateur
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Register'
+ *     responses:
+ *       201:
+ *         description: Utilisateur créé avec succès
+ */
+router.post('/register', validate(validators.register), controller.register);
 module.exports = router;

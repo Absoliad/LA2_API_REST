@@ -27,7 +27,7 @@ create table if not exists Utilisateur
     nomUtilisateur    varchar(50)                           not null,
     prenomUtilisateur varchar(50)                           not null,
     login             varchar(50)                           not null,
-    mdp               varchar(50)                           null,
+    mdp               varchar(200)                           null,
     hashcode          varchar(128)                          null,
     dateHeureCreation timestamp default current_timestamp() not null,
     dateHeureMAJ      timestamp default current_timestamp() null,
@@ -107,7 +107,7 @@ create table if not exists Mouvement
 
 INSERT INTO Categorie (nomCategorie, dateHeureMAJ, dateHeureCreation) VALUES ('Alimentation', NOW(), NOW()),  ('Transports', NOW(),NOW());
 INSERT INTO SousCategorie (nomSousCategorie, idCategorie, dateHeureMAJ, dateHeureCreation) VALUES ('Courses', 1, NOW(), NOW()), ('Essence', 2, NOW(), NOW());
-INSERT INTO Utilisateur (nomUtilisateur, prenomUtilisateur, login, mdp, dateHeureCreation, dateHeureMAJ, ville, codePostal) VALUES ('BULTEZ', 'Matheo', 'mbultez','testmdp',NOW(),NOW(),'Labeuvriere', '62122');
+INSERT INTO Utilisateur (nomUtilisateur, prenomUtilisateur, login, mdp, dateHeureCreation, dateHeureMAJ, ville, codePostal) VALUES ('BULTEZ', 'Matheo', 'mbultez','$argon2id$v=19$m=65536,t=3,p=4$2xexgNpDhqAhFRDcpLDp9Q$fh6HhyOD1bWbGl45it5L1nWz6fFP6lHoaSOIFK6eigs',NOW(),NOW(),'Labeuvriere', '62122');
 INSERT INTO Compte (descriptionCompte, nomBanque,idUtilisateur, dateHeureMAJ,dateHeureCreation) VALUES ('Compte Courant','BNP',1, NOW(),NOW());
 INSERT INTO Tiers (nomTiers, dateHeureMAJ,dateHeureCreation,idUtilisateur) VALUES ('Supermarché', NOW(),NOW(),1);
 
