@@ -219,8 +219,8 @@ begin
     /* Il faut insérer deux mouvements correspondant à ce virement inter-comptes */
 /* un mouvement au débit sur le compte débité */
 /* Un mouvement au crédit sur le cmpte crédité */
-INSERT INTO Mouvement(idCompte,montant,typeMouvement,idVirement,dateMouvement) VALUES (NEW.idCompteDebit,(NEW.montant * -1),'D',NEW.idVirement,NEW.dateVirement);
-INSERT INTO Mouvement(idCompte,montant,typeMouvement,idVirement,dateMouvement) VALUES ( NEW.idCompteCredit,NEW.montant, 'C',NEW.idVirement,NEW.dateVirement);
+INSERT INTO Mouvement(idCompte,montant,typeMouvement,idVirement,dateMouvement,idTiers) VALUES (NEW.idCompteDebit,(NEW.montant * -1),'D',NEW.idVirement,NEW.dateVirement,NEW.idTiers);
+INSERT INTO Mouvement(idCompte,montant,typeMouvement,idVirement,dateMouvement,idTiers) VALUES ( NEW.idCompteCredit,NEW.montant, 'C',NEW.idVirement,NEW.dateVirement,NEW.idTiers);
 end;
 
 $$

@@ -50,6 +50,21 @@ const options = {
             ville: { type: 'string', example: 'Paris' },
             codePostal: { type: 'string', example: '75000' }
           },
+        },
+        Virement: {
+          type: 'object',
+          required: ['idCompteDebit', 'idCompteCredit', 'montant', 'dateVirement'],
+          properties: {
+            idCompteDebit: { type: 'integer', example: 1 },
+            idCompteCredit: { type: 'integer', example: 1 },
+            montant: { type: 'number', format: 'float', example: 100.50 },
+            dateVirement: { type: 'string', format: 'date-time', example: '2023-10-01T12:00:00Z' },
+            idVirement: { type: 'integer', example: 1 },
+            idTiers: { type: 'integer', example: 1 },
+            idCategorie: { type: 'integer', example: 1 },
+            dateHeureCreation: { type: 'string', format: 'date-time', example: '2023-10-01T12:00:00Z' },
+            dateHeureMAJ: { type: 'string', format: 'date-time', example: '2023-10-01T12:00:00Z' }
+          }
         }
       }
     },
