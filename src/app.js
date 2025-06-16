@@ -9,7 +9,7 @@ const indexRouter = require('./routes/index');
 
 // Swagger
 const swaggerUi = require('swagger-ui-express');
-const swaggerSpec = require('../swagger');
+const swaggerSpec = require('./swagger');
 
 const app = express();
 
