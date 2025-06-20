@@ -187,46 +187,6 @@ router.get('/:idCompte/categories/:idCategorie/virements', controller.getViremen
 
 /**
  * @swagger
- * /comptes/{idCompte}/categories/{idCategorie}/sous-categories/{idSousCategorie}/virements:
- *   get:
- *     summary: Liste les virements d'un compte pour une sous-catégorie donnée
- *     tags: [Comptes]
- *     parameters:
- *       - in: path
- *         name: idCompte
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID du compte
- *       - in: path
- *         name: idCategorie
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID de la catégorie
- *       - in: path
- *         name: idSousCategorie
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID de la sous-catégorie
- *     responses:
- *       200:
- *         description: Liste des virements du compte pour la sous-catégorie
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Virement'
- */
-router.get(
-  '/:idCompte/categories/:idCategorie/sous-categories/:idSousCategorie/virements',
-  controller.getVirementsByCompteCategorieSousCategorie
-);
-
-/**
- * @swagger
  * /comptes/{idCompte}/mouvements:
  *   get:
  *     summary: Liste les mouvements d'un compte
