@@ -43,7 +43,7 @@ const validate = validations => [
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/Comptes'
+ *                 $ref: '#/components/schemas/Compte'
  */
 router.get('/', controller.getAllComptes);
 
