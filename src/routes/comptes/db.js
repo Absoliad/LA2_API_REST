@@ -13,7 +13,7 @@ exports.getAllComptes = async (json) => {
     return new Promise((resolve, reject) => {
         db.query(query, [idUtilisateur], (err, results) => {
             if (err) return reject(err);
-            resolve(results.length > 0 ? results[0] : null);
+            resolve(results.length > 0 ? results : null);
         });
     });
 }
@@ -119,33 +119,17 @@ exports.getVirementsByCompteAndCategorie = async (idCompte, idCategorie) => {
         SELECT v.*
         FROM Virement v
         JOIN Categorie c ON v.idCategorie = c.idCategorie
-        WHERE v.idCompte = ? AND v.idCategorie = ?
+        WHERE (v.idCompteCredit = ? OR v.idCompteDebit = ?) AND v.idCategorie = ?
     `;
 
     return new Promise((resolve, reject) => {
-        db.query(query, [idCompte, idCategorie], (err, results) => {
+        db.query(query, [idCompte, idCompte, idCategorie], (err, results) => {
             if (err) return reject(err);
             resolve(results);
         });
     });
 };
 
-exports.getVirementsByCompteAndCategorieAndSousCategorie = async (idCompte, idCategorie, idSousCategorie) => {
-    const query = `
-        SELECT v.*
-        FROM Virement v
-        JOIN Categorie c ON v.idCategorie = c.idCategorie
-        JOIN SousCategorie sc ON v.idSousCategorie = sc.idSousCategorie
-        WHERE v.idCompte = ? AND v.idCategorie = ? AND v.idSousCategorie = ?
-    `;
-
-    return new Promise((resolve, reject) => {
-        db.query(query, [idCompte, idCategorie, idSousCategorie], (err, results) => {
-            if (err) return reject(err);
-            resolve(results);
-        });
-    });
-};  
 
 exports.getMouvementsByCompteAndCategorie = async (idCompte, idCategorie) => {
     const query = `

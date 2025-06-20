@@ -67,7 +67,7 @@ const options = {
             idCompteDebit: { type: 'integer', example: 1 },
             idCompteCredit: { type: 'integer', example: 1 },
             montant: { type: 'number', format: 'float', example: 100.50 },
-            dateVirement: { type: 'string', format: 'date-time', example: '2023-10-01T12:00:00Z' },
+            dateVirement: { type: 'string', format: 'date-time', example: '2023-10-01' },
             idVirement: { type: 'integer', example: 1 },
             idTiers: { type: 'integer', example: 1 },
             idCategorie: { type: 'integer', example: 1 },

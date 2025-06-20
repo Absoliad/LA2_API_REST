@@ -108,9 +108,9 @@ exports.deleteCompte = async (req, res) => {
 }
 exports.getVirementsByCompte = async (req, res) => {
   try {
-    const { idComptes } = req.params;
+    const { idCompte } = req.params;
     const idUtilisateur = req.user.idUtilisateur;
-    const virements = await dbPersonnes.getVirementsByCompte(idComptes, idUtilisateur);
+    const virements = await dbPersonnes.getVirementsByCompte(idCompte, idUtilisateur);
     return res.status(200).json(virements);
   } catch (error) {
     console.error('Error fetching virements by compte:', error);
@@ -120,9 +120,9 @@ exports.getVirementsByCompte = async (req, res) => {
 
 exports.getVirementsByCompteAndCategorie = async (req, res) => {
   try {
-    const { idComptes, idCategorie } = req.params;
+    const { idCompte, idCategorie } = req.params;
     const idUtilisateur = req.user.idUtilisateur;
-    const virements = await dbPersonnes.getVirementsByCompteAndCategorie(idComptes, idCategorie, idUtilisateur);
+    const virements = await dbPersonnes.getVirementsByCompteAndCategorie(idCompte, idCategorie, idUtilisateur);
     return res.status(200).json(virements);
   } catch (error) {
     console.error('Error fetching virements by compte and categorie:', error);
@@ -130,28 +130,11 @@ exports.getVirementsByCompteAndCategorie = async (req, res) => {
   }
 };
 
-exports.getVirementsByCompteCategorieSousCategorie = async (req, res) => {
-  try {
-    const { idComptes, idCategorie, idSousCategorie } = req.params;
-    const idUtilisateur = req.user.idUtilisateur;
-    const virements = await dbPersonnes.getVirementsByCompteCategorieSousCategorie(
-      idComptes,
-      idCategorie,
-      idSousCategorie,
-      idUtilisateur
-    );
-    return res.status(200).json(virements);
-  } catch (error) {
-    console.error('Error fetching virements by compte, categorie and sous-categorie:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-};
-
 exports.getMouvementsByCompteAndCategorie = async (req, res) => {
   try {
-    const { idComptes, idCategorie } = req.params;
+    const { idCompte, idCategorie } = req.params;
     const idUtilisateur = req.user.idUtilisateur;
-    const mouvements = await dbPersonnes.getMouvementsByCompteAndCategorie(idComptes, idCategorie, idUtilisateur);
+    const mouvements = await dbPersonnes.getMouvementsByCompteAndCategorie(idCompte, idCategorie, idUtilisateur);
     return res.status(200).json(mouvements);
   } catch (error) {
     console.error('Error fetching mouvements by compte and categorie:', error);
@@ -161,10 +144,10 @@ exports.getMouvementsByCompteAndCategorie = async (req, res) => {
 
 exports.getMouvementsByCompteCategorieSousCategorie = async (req, res) => {
   try {
-    const { idComptes, idCategorie, idSousCategorie } = req.params;
+    const { idCompte, idCategorie, idSousCategorie } = req.params;
     const idUtilisateur = req.user.idUtilisateur;
     const mouvements = await dbPersonnes.getMouvementsByCompteCategorieSousCategorie(
-      idComptes,
+      idCompte,
       idCategorie,
       idSousCategorie,
       idUtilisateur
@@ -178,9 +161,9 @@ exports.getMouvementsByCompteCategorieSousCategorie = async (req, res) => {
 
 exports.getMouvementsByCompte = async (req, res) => {
   try {
-    const { idComptes } = req.params;
+    const { idCompte } = req.params;
     const idUtilisateur = req.user.idUtilisateur;
-    const mouvements = await dbPersonnes.getMouvementsByCompte(idComptes, idUtilisateur);
+    const mouvements = await dbPersonnes.getMouvementsByCompte(idCompte, idUtilisateur);
     return res.status(200).json(mouvements);
   } catch (error) {
     console.error('Error fetching mouvements by compte:', error);
@@ -190,9 +173,9 @@ exports.getMouvementsByCompte = async (req, res) => {
 
 exports.getSoldeByCompte = async (req, res) => {
   try {
-    const { idComptes } = req.params;
+    const { idCompte } = req.params;
     const idUtilisateur = req.user.idUtilisateur;
-    const solde = await dbPersonnes.getSoldeByCompte(idComptes, idUtilisateur);
+    const solde = await dbPersonnes.getSoldeByCompte(idCompte, idUtilisateur);
     return res.status(200).json(solde);
   } catch (error) {
     console.error('Error fetching solde by compte:', error);
