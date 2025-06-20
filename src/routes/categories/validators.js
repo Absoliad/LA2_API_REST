@@ -29,18 +29,29 @@ const authValidators = {
       .withMessage('Le nom de la banque doit être une chaîne de caractères'),
   ],
   getVirementsByCompte: [
-    param('idCompte')
+    param('idComptes')
       .isInt()
       .withMessage('L\'ID du compte doit être un entier'),
   ],
   getVirementsByCompteAndCategorie: [
-    param('idCompte')
+    param('idComptes')
       .isInt()
       .withMessage('L\'ID du compte doit être un entier'),
     param('idCategorie')
       .isInt()
       .withMessage('L\'ID de la catégorie doit être un entier'),
-  ]
+  ],
+  getVirementsByCompteCategorieSousCategorie: [
+    param('idComptes')
+      .isInt()
+      .withMessage('L\'ID du compte doit être un entier'),
+    param('idCategorie')
+      .isInt()
+      .withMessage('L\'ID de la catégorie doit être un entier'),
+    param('idSousCategorie')
+      .isInt()
+      .withMessage('L\'ID de la sous-catégorie doit être un entier'),
+  ],
 };
 
 module.exports = authValidators;
