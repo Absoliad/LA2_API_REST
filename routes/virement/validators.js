@@ -12,6 +12,10 @@ const virementValidators = {
   deleteVirement: [
     param('idVirement').isInt().withMessage('ID du virement requis'),
   ],
+  updateVirement: [
+    param('idVirement').isInt().withMessage('ID du virement requis'),
+    check('idCategorie').isInt().withMessage('ID de catégorie requis')
+  ]
 };
 
 

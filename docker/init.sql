@@ -183,7 +183,7 @@ begin
         SELECT idCategorie INTO v_Categorie FROM SousCategorie WHERE idSousCategorie = NEW.idSousCategorie;
         IF v_Categorie <> NEW.idCategorie THEN
             SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'La sous-catégorie n\'appartient pas à la catégorie choisie';
+            SET MESSAGE_TEXT = 'La sous-catégorie n appartient pas à la catégorie choisie';
         end if;
     end if;
     SET NEW.dateHeureMAJ = CURRENT_TIMESTAMP;
@@ -202,7 +202,7 @@ end;
 $$
 
 create trigger TRG_AFTER_DELETE_VIREMENT
-    after delete
+    before delete
     on Virement
     for each row
 begin

@@ -50,3 +50,13 @@ exports.deleteVirement = async (id) => {
     }
     );
 }
+
+exports.updateVirement = async (id, idCategorie) => {
+    const query = 'UPDATE Virement SET idCategorie = ? WHERE idVirement = ?';
+    return new Promise((resolve, reject) => {
+        db.query(query, [idCategorie, id], (err, results) => {
+            if (err) reject(err);
+            resolve(results);
+        });
+    });
+}
