@@ -17,6 +17,21 @@ exports.getAllComptes = async (req, res) => {
   }
 }
 
+exports.getCompteById = async (req, res) => {
+  try {
+    const { idCompte } = req.params;
+    const idUtilisateur = req.user.idUtilisateur;
+    const compte = await dbPersonnes.getCompteById(idCompte, idUtilisateur);
+    if (!compte) {
+      return res.status(404).json({ message: 'Compte non trouvé' });
+    }
+    return res.status(200).json(compte);
+  } catch (error) {
+    console.error('Error fetching compte by ID:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
 exports.createCompte = async (req, res) => {
   try {
     const { descriptionCompte, nomBanque } = req.body;
@@ -35,6 +50,7 @@ exports.createCompte = async (req, res) => {
       idUtilisateur,
     });
 
+    res.location(`/comptes/${newCompte.idCompte}`);
     return res.status(201).json(newCompte);
   } catch (error) {
     console.error('Error creating compte:', error);
@@ -62,6 +78,7 @@ exports.updateCompte = async (req, res) => {
       idUtilisateur,
     });
 
+    res.location(`/comptes/${idCompte}`);
     return res.status(200).json(updatedCompte);
   } catch (error) {
     console.error('Error updating compte:', error);

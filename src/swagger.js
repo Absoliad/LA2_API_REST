@@ -75,6 +75,17 @@ const options = {
             dateHeureMAJ: { type: 'string', format: 'date-time', example: '2023-10-01T12:00:00Z' }
           }
         },
+        Categorie : {
+          type: 'object',
+          required: ['idCategorie', 'libelle'],
+          properties: {
+            idCategorie: { type: 'integer', example: 1 },
+            libelle: { type: 'string', example: 'Alimentation' },
+            description: { type: 'string', example: 'Dépenses alimentaires' },
+            dateHeureCreation: { type: 'string', format: 'date-time', example: '2023-10-01T12:00:00Z' },
+            dateHeureMAJ: { type: 'string', format: 'date-time', example: '2023-10-01T12:00:00Z' }
+          }
+        },
       }
     },
     security: [

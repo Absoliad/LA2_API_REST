@@ -49,6 +49,31 @@ router.get('/', controller.getAllComptes);
 
 /**
  * @swagger
+ * /comptes/{idCompte}:
+ *   get:
+ *     summary: Récupère un compte par son ID
+ *     tags: [Comptes]
+ *     parameters:
+ *       - in: path
+ *         name: idCompte
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID du compte à récupérer
+ *     responses:
+ *       200:
+ *         description: Compte trouvé
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Compte'
+ *       404:
+ *         description: Compte non trouvé
+ */
+router.get('/:idCompte', controller.getCompteById);
+
+/**
+ * @swagger
  * /comptes:
  *   post:
  *     summary: Crée un nouveau compte
@@ -76,7 +101,7 @@ router.post(
 /**
  * @swagger
  * /comptes/{idCompte}:
- *   put:
+ *   patch:
  *     summary: Met à jour un compte existant
  *     tags: [Comptes]
  *     parameters:
