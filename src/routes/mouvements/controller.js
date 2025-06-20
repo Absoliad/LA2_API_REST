@@ -9,6 +9,19 @@ exports.getAllMouvements = async (req, res, next) => {
   }
 };
 
+exports.getMouvementById = async (req, res, next) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    const mouvement = await dbMouvements.getMouvementById(id);
+    if (!mouvement) {
+      return res.status(404).json({ message: 'Mouvement non trouvé' });
+    }
+    return res.status(200).json(mouvement);
+  } catch (err) {
+    next(err);
+  }
+};
+
 exports.addMouvements = async (req, res, next) => {
   try {
     const mouvementData = req.body;

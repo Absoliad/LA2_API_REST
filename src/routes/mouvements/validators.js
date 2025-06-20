@@ -4,6 +4,9 @@ const mouvementValidators = {
   getAllMouvements: [
     // Pas de validation spécifique
   ],
+  getMouvementById: [
+    param('id').notEmpty().withMessage('L\'ID est requis').isInt().withMessage('L\'ID doit être un entier'),
+  ],
 
   addMouvements: [
     check('idMouvement').notEmpty().withMessage('idMouvement est requis').isInt().withMessage('idMouvement doit être un entier'),

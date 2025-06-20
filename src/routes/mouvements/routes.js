@@ -46,6 +46,35 @@ router.get('/', validate(validators.getAllMouvements), controller.getAllMouvemen
 
 /**
  * @swagger
+ * /mouvements/{id}:
+ *   get:
+ *     summary: Récupère un mouvement par son ID
+ *     tags:
+ *       - Mouvements
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         description: ID du mouvement à récupérer
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Mouvement trouvé
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Mouvement'
+ */
+router.get('/:id', validate(validators.getMouvementById), controller.getMouvementById);
+
+
+/**
+ * @swagger
  * /mouvements:
  *   post:
  *     summary: Crée un nouveau mouvement

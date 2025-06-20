@@ -10,15 +10,15 @@ exports.getAllMouvements = async () => {
   });
 };
 
-// exports.getMouvementById = async (idMouvement) => {
-//   const query = 'SELECT * FROM Mouvement WHERE idMouvement = ?';
-//   return new Promise((resolve, reject) => {
-//     db.query(query, [idMouvement], (err, results) => {
-//       if (err) reject(err);
-//       else resolve(results.length > 0 ? results[0] : null);
-//     });
-//   });
-// };
+exports.getMouvementById = async (idMouvement) => {
+  const query = 'SELECT * FROM Mouvement WHERE idMouvement = ?';
+  return new Promise((resolve, reject) => {
+    db.query(query, [idMouvement], (err, results) => {
+      if (err) reject(err);
+      else resolve(results.length > 0 ? results[0] : null);
+    });
+  });
+};
 
 exports.addMouvement = async (mouvement) => {
   const {idMouvement, dateMouvement, idCompte, idTiers, idCategorie, idSousCategorie, idVirement, montant, typeMouvement} = mouvement;
