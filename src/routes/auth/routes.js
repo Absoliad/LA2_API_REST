@@ -41,6 +41,8 @@ const validate = validations => [
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Token'
+ *       401:
+ *          description: Identifiants invalides
  */
 router.post('/login', validate(validators.login), controller.login);
 
@@ -60,6 +62,8 @@ router.post('/login', validate(validators.login), controller.login);
  *     responses:
  *       201:
  *         description: Utilisateur créé avec succès
+ *       400:
+ *         description: Utilisateur déjà existant ou données invalides
  */
 router.post('/register', validate(validators.register), controller.register);
 module.exports = router;

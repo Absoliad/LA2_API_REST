@@ -100,7 +100,19 @@ const options = {
             dateHeureCreation: { type: 'string', format: 'date-time', example: '2023-10-01T12:00:00Z' },
             dateHeureMAJ: { type: 'string', format: 'date-time', example: '2023-10-01T12:00:00Z' }
           }
-        }
+        },
+        Compte : {
+          type: 'object',
+          required: ['idCompte', 'nomBanque', 'descriptionCompte', 'solde'],
+          properties: {
+            idCompte: { type: 'integer', example: 1 },
+            nomBanque: { type: 'string', example: 'Banque Populaire' },
+            descriptionCompte: { type: 'string', example: 'Compte courant' },
+            solde: { type: 'number', format: 'float', example: 1000.00 },
+            dateHeureCreation: { type: 'string', format: 'date-time', example: '2023-10-01T12:00:00Z' },
+            dateHeureMAJ: { type: 'string', format: 'date-time', example: '2023-10-01T12:00:00Z' }
+          }
+        },
       }
     },
     security: [

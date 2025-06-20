@@ -1,11 +1,13 @@
 const dbMouvements = require('./db');
+const ApiError = require('../../middlewares/ApiError');
+const httpStatusCodes = require('../../middlewares/httpStatusCodes');
 
 exports.getAllMouvements = async (req, res, next) => {
   try {
     const mouvements = await dbMouvements.getAllMouvements();
-    return res.status(200).json(mouvements);
-  } catch (err) {
-    next(err);
+    return res.status(httpStatusCodes.OK.code).json(mouvements);
+  } catch (error) {
+    next(new ApiError(httpStatusCodes.INTERNAL_SERVER_ERROR.code, error.message));
   }
 };
 
@@ -14,11 +16,11 @@ exports.getMouvementById = async (req, res, next) => {
     const id = parseInt(req.params.id, 10);
     const mouvement = await dbMouvements.getMouvementById(id);
     if (!mouvement) {
-      return res.status(404).json({ message: 'Mouvement non trouvé' });
+      return next(new ApiError(httpStatusCodes.NOT_FOUND.code, 'Mouvement non trouvé'));
     }
-    return res.status(200).json(mouvement);
-  } catch (err) {
-    next(err);
+    return res.status(httpStatusCodes.OK.code).json(mouvement);
+  } catch (error) {
+    next(new ApiError(httpStatusCodes.INTERNAL_SERVER_ERROR.code, error.message));
   }
 };
 
@@ -26,16 +28,15 @@ exports.addMouvements = async (req, res, next) => {
   try {
     const mouvementData = req.body;
 
-    // Vérifier si le mouvement avec idMouvement existe déjà (optionnel, selon logique métier)
     const existingMouvement = await dbMouvements.getMouvementById(mouvementData.idMouvement);
     if (existingMouvement) {
-      return res.status(400).json({ message: 'Le mouvement existe déjà' });
+      return next(new ApiError(httpStatusCodes.BAD_REQUEST.code, 'Le mouvement existe déjà'));
     }
 
     const newMouvement = await dbMouvements.addMouvement(mouvementData);
-    return res.status(201).json(newMouvement);
-  } catch (err) {
-    next(err);
+    return res.status(httpStatusCodes.CREATED).json(newMouvement);
+  } catch (error) {
+    next(new ApiError(httpStatusCodes.INTERNAL_SERVER_ERROR.code, error.message));
   }
 };
 
@@ -44,11 +45,11 @@ exports.deleteMouvements = async (req, res, next) => {
     const id = parseInt(req.params.id, 10);
     const deleted = await dbMouvements.deleteMouvement(id);
     if (!deleted) {
-      return res.status(404).json({ message: 'Mouvement non trouvé' });
+      return next(new ApiError(httpStatusCodes.NOT_FOUND.code, 'Mouvement non trouvé'));
     }
-    return res.status(200).json({ message: 'Mouvement supprimé avec succès' });
-  } catch (err) {
-    next(err);
+    return res.status(httpStatusCodes.OK.code).json({ message: 'Mouvement supprimé avec succès' });
+  } catch (error) {
+    next(new ApiError(httpStatusCodes.INTERNAL_SERVER_ERROR.code, error.message));
   }
 };
 
@@ -59,10 +60,11 @@ exports.patchMouvements = async (req, res, next) => {
 
     const updated = await dbMouvements.patchMouvement(id, updateData);
     if (!updated) {
-      return res.status(404).json({ message: 'Mouvement non trouvé' });
+      return next(new ApiError(httpStatusCodes.NOT_FOUND.code, 'Mouvement non trouvé'));
     }
-    return res.status(200).json(updated);
-  } catch (err) {
-    next(err);
+    return res.status(httpStatusCodes.OK.code).json(updated);
+  } catch (error) {
+    next(new ApiError(httpStatusCodes.INTERNAL_SERVER_ERROR.code, error.message));
+
   }
 };

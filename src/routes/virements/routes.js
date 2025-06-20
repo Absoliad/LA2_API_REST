@@ -41,9 +41,20 @@ const validate = validations => [
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Virement'
+ *       400:
+ *         description: Requête invalide (erreur de validation)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *       500:
+ *         description: Erreur interne du serveur
  */
-
-
 router.post('/', validate(validators.createVirement), controller.createVirement);
 
 /**
@@ -61,9 +72,12 @@ router.post('/', validate(validators.createVirement), controller.createVirement)
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Virement'
+ *       401:
+ *         description: Non authentifié
+ *       500:
+ *         description: Erreur interne du serveur
  */
 router.get('/', controller.getAllVirements);
-
 
 /**
  * @swagger
@@ -79,8 +93,28 @@ router.get('/', controller.getAllVirements);
  *           type: integer
  *         description: ID du virement à supprimer
  *     responses:
- *       204:
+ *       200:
  *         description: Virement supprimé avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       400:
+ *         description: Requête invalide (erreur de validation)
+ *       404:
+ *         description: Virement non trouvé
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       500:
+ *         description: Erreur interne du serveur
  */
 router.delete('/:idVirement', validate(validators.deleteVirement), controller.deleteVirement);
 
@@ -113,17 +147,26 @@ router.delete('/:idVirement', validate(validators.deleteVirement), controller.de
  *         content:
  *           application/json:
  *             schema:
- *               allOf:
- *                 - $ref: '#/components/schemas/Virement'
- *                 - type: object
- *                   properties:
- *                     IDCATEGORIE:
- *                       type: integer
- *                       description: ID de la catégorie associée au virement
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 virement:
+ *                   $ref: '#/components/schemas/Virement'
+ *       400:
+ *         description: Requête invalide (erreur de validation)
+ *       404:
+ *         description: Virement non trouvé
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       500:
+ *         description: Erreur interne du serveur
  */
-
-
 router.patch('/:idVirement', validate(validators.updateVirement), controller.updateVirement);
-
 
 module.exports = router;

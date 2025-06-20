@@ -30,8 +30,10 @@ const validate = validations => [
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Categorie'
+ *       500:
+ *         description: Erreur interne du serveur
  */
-router.get('/categories', controller.getAllCategories);
+router.get('/', controller.getAllCategories);
 
 /**
  * @swagger
@@ -55,8 +57,10 @@ router.get('/categories', controller.getAllCategories);
  *               $ref: '#/components/schemas/Categorie'
  *       404:
  *         description: Catégorie non trouvée
+ *       500:
+ *         description: Erreur interne du serveur
  */
-router.get('/categories/:idCategorie', controller.getCategorieById);
+router.get('/:idCategorie', controller.getCategorieById);
 
 /**
  * @swagger
@@ -82,8 +86,9 @@ router.get('/categories/:idCategorie', controller.getCategorieById);
  *                 $ref: '#/components/schemas/SousCategorie'
  *       404:
  *         description: Catégorie non trouvée
+ *       500:
+ *         description: Erreur interne du serveur
  */
-router.get('/categories/:idCategorie/sous-categories', controller.getSousCategoriesByCategorieId);
-
+router.get('/:idCategorie/sous-categories', controller.getSousCategoriesByCategorieId);
 
 module.exports = router;

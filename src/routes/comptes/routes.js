@@ -22,7 +22,6 @@ const validate = validations => [
  *   name: Comptes
  *   description: Gestion des comptes
  */
-
 /**
  * @swagger
  * /comptes:
@@ -44,6 +43,10 @@ const validate = validations => [
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Compte'
+ *       404:
+ *         description: Aucun compte trouvé pour cet utilisateur
+ *       500:
+ *         description: Erreur lors de la récupération des comptes
  */
 router.get('/', controller.getAllComptes);
 
@@ -69,6 +72,8 @@ router.get('/', controller.getAllComptes);
  *               $ref: '#/components/schemas/Compte'
  *       404:
  *         description: Compte non trouvé
+ *       500:
+ *         description: Erreur lors de la récupération du compte
  */
 router.get('/:idCompte', controller.getCompteById);
 
@@ -91,6 +96,10 @@ router.get('/:idCompte', controller.getCompteById);
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Comptes'
+ *       400:
+ *         description: Compte déjà existant ou données invalides
+ *       500:
+ *         description: Erreur lors de la création du compte
  */
 router.post(
   '/',
@@ -126,6 +135,8 @@ router.post(
  *               $ref: '#/components/schemas/Comptes'
  *       404:
  *         description: Compte non trouvé
+ *       500:
+ *         description: Erreur lors de la mise à jour du compte
  */
 router.patch(
   '/:idCompte',
@@ -151,6 +162,8 @@ router.patch(
  *         description: Compte supprimé avec succès
  *       404:
  *         description: Compte non trouvé
+ *       500:
+ *         description: Erreur lors de la suppression du compte
  */
 router.delete('/:idCompte', controller.deleteCompte);
 
@@ -176,6 +189,10 @@ router.delete('/:idCompte', controller.deleteCompte);
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Virement'
+ *       404:
+ *         description: Aucun virement trouvé pour ce compte
+ *       500:
+ *         description: Erreur lors de la récupération des virements
  */
 router.get('/:idCompte/virements', controller.getVirementsByCompte);
 
@@ -207,6 +224,10 @@ router.get('/:idCompte/virements', controller.getVirementsByCompte);
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Virement'
+ *       404:
+ *         description: Aucun virement trouvé pour ce compte et cette catégorie
+ *       500:
+ *         description: Erreur lors de la récupération des virements par catégorie
  */
 router.get('/:idCompte/categories/:idCategorie/virements', controller.getVirementsByCompteAndCategorie);
 
@@ -232,6 +253,10 @@ router.get('/:idCompte/categories/:idCategorie/virements', controller.getViremen
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Mouvement'
+ *       404:
+ *         description: Aucun mouvement trouvé pour ce compte
+ *       500:
+ *         description: Erreur lors de la récupération des mouvements
  */
 router.get('/:idCompte/mouvements', controller.getMouvementsByCompte);
 
@@ -263,6 +288,10 @@ router.get('/:idCompte/mouvements', controller.getMouvementsByCompte);
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Mouvement'
+ *       404:
+ *         description: Aucun mouvement trouvé pour ce compte et cette catégorie
+ *       500:
+ *         description: Erreur lors de la récupération des mouvements par catégorie
  */
 router.get(
   '/:idCompte/categories/:idCategorie/mouvements',
@@ -303,6 +332,10 @@ router.get(
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Mouvement'
+ *       404:
+ *         description: Aucun mouvement trouvé pour ce compte, catégorie et sous-catégorie
+ *       500:
+ *         description: Erreur lors de la récupération des mouvements par sous-catégorie
  */
 router.get(
   '/:idCompte/categories/:idCategorie/sous-categories/:idSousCategorie/mouvements',
@@ -335,7 +368,10 @@ router.get(
  *                   format: float
  *                   description: Solde du compte
  *       404:
- *         description: Compte non trouvé
+ *         description: Solde non trouvé pour ce compte
+ *       500:
+ *         description: Erreur lors de la récupération du solde
  */
 router.get('/:idCompte/solde', controller.getSoldeByCompte);
+
 module.exports = router;

@@ -1,6 +1,7 @@
 const db = require('../../config/db');
 
 exports.getAllMouvements = async () => {
+  console.log('Fetching all mouvements');
   const query = 'SELECT * FROM Mouvement';
   return new Promise((resolve, reject) => {
     db.query(query, (err, results) => {
