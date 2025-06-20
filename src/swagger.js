@@ -35,8 +35,8 @@ const options = {
           type: 'object',
           required: ['login', 'mdp'],
           properties: {
-            login: { type: 'string', exemple: 'test'},
-            mdp: { type: 'string', exemple: 'test'}
+            login: { type: 'string', example: 'test'},
+            mdp: { type: 'string', example: 'test'}
           }
         },
         Register: {
@@ -50,6 +50,21 @@ const options = {
             ville: { type: 'string', example: 'Paris' },
             codePostal: { type: 'string', example: '75000' }
           },
+        },
+        Mouvement: {
+          type: 'object',
+          required: ['idMouvement', 'dateMouvement', 'idCompte', 'montant', 'typeMouvement'],
+          properties: {
+            idMouvement: { type: 'integer', example: 1 },
+            dateMouvement: { type: 'string', format: 'date', example: '2024-06-13' },
+            idCompte: { type: 'integer', example: 101 },
+            idTiers: { type: 'integer', nullable: true, example: 5 },
+            idCategorie: { type: 'integer', nullable: true, example: 2 },
+            idSousCategorie: { type: 'integer', nullable: true, example: 8 },
+            idVirement: { type: 'integer', nullable: true, example: 3 },
+            montant: { type: 'number', format: 'decimal', example: 125.50 },
+            typeMouvement: { type: 'string', enum: ['D', 'C'], example: 'D', description: 'D pour Débit, C pour Crédit' },
+          }
         }
       }
     },
