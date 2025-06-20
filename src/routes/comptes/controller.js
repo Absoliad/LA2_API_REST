@@ -1,8 +1,10 @@
 const dbPersonnes = require('./db');
 const argon2 = require("argon2");
 const jwt = require('jsonwebtoken');
+const ApiError = require('../../middlewares/ApiError');
+const httpStatusCodes = require('../../middlewares/httpStatusCodes');
 
-exports.getAllComptes = async (req, res) => {
+exports.getAllComptes = async (req, res, next) => {
   try {
     const idUtilisateur = req.user.idUtilisateur;
     const fields = req.query.fields;
@@ -10,67 +12,67 @@ exports.getAllComptes = async (req, res) => {
       idUtilisateur,
       fields,
     });
-    return res.status(200).json(comptes);
+    if (!comptes || comptes.length === 0) {
+      return next(new ApiError(httpStatusCodes.NOT_FOUND.code, 'Aucun compte trouvé pour cet utilisateur'));
+    }
+    return res.status(httpStatusCodes.OK.code).json(comptes);
   } catch (error) {
-    console.error('Error fetching comptes:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    next(new ApiError(httpStatusCodes.INTERNAL_SERVER_ERROR.code, 'Erreur lors de la récupération des comptes'));
   }
 }
 
-exports.getCompteById = async (req, res) => {
+exports.getCompteById = async (req, res, next) => {
   try {
     const { idCompte } = req.params;
     const idUtilisateur = req.user.idUtilisateur;
     const compte = await dbPersonnes.getCompteById(idCompte, idUtilisateur);
     if (!compte) {
-      return res.status(404).json({ message: 'Compte non trouvé' });
+      return next(new ApiError(httpStatusCodes.NOT_FOUND.code, 'Compte non trouvé'));
     }
-    return res.status(200).json(compte);
+    return res.status(httpStatusCodes.OK.code).json(compte);
   } catch (error) {
-    console.error('Error fetching compte by ID:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    next(new ApiError(httpStatusCodes.INTERNAL_SERVER_ERROR.code, 'Erreur lors de la récupération du compte'));
   }
 };
 
-exports.createCompte = async (req, res) => {
+exports.createCompte = async (req, res, next) => {
   try {
     const { descriptionCompte, nomBanque } = req.body;
     const idUtilisateur = req.user.idUtilisateur;
 
-    // Vérifier si le compte existe déjà
     const existingCompte = await dbPersonnes.getCompteByNom(nomBanque, idUtilisateur);
     if (existingCompte) {
-      return res.status(400).json({ message: 'Compte déjà existant' });
+      return next(new ApiError(httpStatusCodes.BAD_REQUEST.code, 'Compte déjà existant'));
     }
 
-    // Créer le compte
     const newCompte = await dbPersonnes.createCompte({
       descriptionCompte,
       nomBanque,
       idUtilisateur,
     });
 
+    if (!newCompte) {
+      return next(new ApiError(httpStatusCodes.INTERNAL_SERVER_ERROR.code, 'Erreur lors de la création du compte'));
+    }
+
     res.location(`/comptes/${newCompte.idCompte}`);
-    return res.status(201).json(newCompte);
+    return res.status(httpStatusCodes.CREATED.code).json(newCompte);
   } catch (error) {
-    console.error('Error creating compte:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    next(new ApiError(httpStatusCodes.INTERNAL_SERVER_ERROR.code, 'Erreur lors de la création du compte'));
   }
 };
 
-exports.updateCompte = async (req, res) => {
+exports.updateCompte = async (req, res, next) => {
   try {
     const { idCompte } = req.params;
     const { descriptionCompte, nomBanque } = req.body;
     const idUtilisateur = req.user.idUtilisateur;
 
-    // Vérifier si le compte existe
     const existingCompte = await dbPersonnes.getCompteById(idCompte);
     if (!existingCompte) {
-      return res.status(404).json({ message: 'Compte non trouvé' });
+      return next(new ApiError(httpStatusCodes.NOT_FOUND.code, 'Compte non trouvé'));
     }
 
-    // Mettre à jour le compte
     const updatedCompte = await dbPersonnes.updateCompte({
       idCompte,
       descriptionCompte,
@@ -79,70 +81,76 @@ exports.updateCompte = async (req, res) => {
     });
 
     res.location(`/comptes/${idCompte}`);
-    return res.status(200).json(updatedCompte);
+    return res.status(httpStatusCodes.OK.code).json(updatedCompte);
   } catch (error) {
-    console.error('Error updating compte:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    next(new ApiError(httpStatusCodes.INTERNAL_SERVER_ERROR.code, 'Erreur lors de la mise à jour du compte'));
   }
 }
 
-exports.deleteCompte = async (req, res) => {
+exports.deleteCompte = async (req, res, next) => {
   try {
     const { idCompte } = req.params;
     const idUtilisateur = req.user.idUtilisateur;
 
-    // Vérifier si le compte existe
     const existingCompte = await dbPersonnes.getCompteById(idCompte);
     if (!existingCompte) {
-      return res.status(404).json({ message: 'Compte non trouvé' });
+      return next(new ApiError(httpStatusCodes.NOT_FOUND.code, 'Compte non trouvé'));
     }
 
-    // Supprimer le compte
-    await dbPersonnes.deleteCompte(idCompte, idUtilisateur);
+    const compte = await dbPersonnes.deleteCompte(idCompte, idUtilisateur);
+    if (!compte) {
+      return next(new ApiError(httpStatusCodes.INTERNAL_SERVER_ERROR.code, 'Erreur lors de la suppression du compte'));
+    }
 
-    return res.status(204).json({ message: 'Compte supprimé avec succès' });
+    return res.status(httpStatusCodes.NO_CONTENT.code).json({ message: 'Compte supprimé avec succès' });
   } catch (error) {
-    console.error('Error deleting compte:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    next(new ApiError(httpStatusCodes.INTERNAL_SERVER_ERROR.code, 'Erreur lors de la suppression du compte'));
   }
 }
-exports.getVirementsByCompte = async (req, res) => {
+
+exports.getVirementsByCompte = async (req, res, next) => {
   try {
     const { idCompte } = req.params;
     const idUtilisateur = req.user.idUtilisateur;
     const virements = await dbPersonnes.getVirementsByCompte(idCompte, idUtilisateur);
-    return res.status(200).json(virements);
+    if (!virements) {
+      return next(new ApiError(httpStatusCodes.NOT_FOUND.code, 'Aucun virement trouvé pour ce compte'));
+    }
+    return res.status(httpStatusCodes.OK.code).json(virements);
   } catch (error) {
-    console.error('Error fetching virements by compte:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    next(new ApiError(httpStatusCodes.INTERNAL_SERVER_ERROR.code, 'Erreur lors de la récupération des virements'));
   }
 };
 
-exports.getVirementsByCompteAndCategorie = async (req, res) => {
+exports.getVirementsByCompteAndCategorie = async (req, res, next) => {
   try {
     const { idCompte, idCategorie } = req.params;
     const idUtilisateur = req.user.idUtilisateur;
     const virements = await dbPersonnes.getVirementsByCompteAndCategorie(idCompte, idCategorie, idUtilisateur);
-    return res.status(200).json(virements);
+    if (!virements) {
+      return next(new ApiError(httpStatusCodes.NOT_FOUND.code, 'Aucun virement trouvé pour ce compte et cette catégorie'));
+    }
+    return res.status(httpStatusCodes.OK.code).json(virements);
   } catch (error) {
-    console.error('Error fetching virements by compte and categorie:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    next(new ApiError(httpStatusCodes.INTERNAL_SERVER_ERROR.code, 'Erreur lors de la récupération des virements par catégorie'));
   }
 };
 
-exports.getMouvementsByCompteAndCategorie = async (req, res) => {
+exports.getMouvementsByCompteAndCategorie = async (req, res, next) => {
   try {
     const { idCompte, idCategorie } = req.params;
     const idUtilisateur = req.user.idUtilisateur;
     const mouvements = await dbPersonnes.getMouvementsByCompteAndCategorie(idCompte, idCategorie, idUtilisateur);
-    return res.status(200).json(mouvements);
+    if (!mouvements) {
+      return next(new ApiError(httpStatusCodes.NOT_FOUND.code, 'Aucun mouvement trouvé pour ce compte et cette catégorie'));
+    }
+    return res.status(httpStatusCodes.OK.code).json(mouvements);
   } catch (error) {
-    console.error('Error fetching mouvements by compte and categorie:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    next(new ApiError(httpStatusCodes.INTERNAL_SERVER_ERROR.code, 'Erreur lors de la récupération des mouvements par catégorie'));
   }
 }
 
-exports.getMouvementsByCompteCategorieSousCategorie = async (req, res) => {
+exports.getMouvementsByCompteCategorieSousCategorie = async (req, res, next) => {
   try {
     const { idCompte, idCategorie, idSousCategorie } = req.params;
     const idUtilisateur = req.user.idUtilisateur;
@@ -152,33 +160,39 @@ exports.getMouvementsByCompteCategorieSousCategorie = async (req, res) => {
       idSousCategorie,
       idUtilisateur
     );
-    return res.status(200).json(mouvements);
+    if (!mouvements) {
+      return next(new ApiError(httpStatusCodes.NOT_FOUND.code, 'Aucun mouvement trouvé pour ce compte, catégorie et sous-catégorie'));
+    }
+    return res.status(httpStatusCodes.OK.code).json(mouvements);
   } catch (error) {
-    console.error('Error fetching mouvements by compte, categorie and sous-categorie:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    next(new ApiError(httpStatusCodes.INTERNAL_SERVER_ERROR.code, 'Erreur lors de la récupération des mouvements par sous-catégorie'));
   }
 }
 
-exports.getMouvementsByCompte = async (req, res) => {
+exports.getMouvementsByCompte = async (req, res, next) => {
   try {
     const { idCompte } = req.params;
     const idUtilisateur = req.user.idUtilisateur;
     const mouvements = await dbPersonnes.getMouvementsByCompte(idCompte, idUtilisateur);
-    return res.status(200).json(mouvements);
+    if (!mouvements) {
+      return next(new ApiError(httpStatusCodes.NOT_FOUND.code, 'Aucun mouvement trouvé pour ce compte'));
+    }
+    return res.status(httpStatusCodes.OK.code).json(mouvements);
   } catch (error) {
-    console.error('Error fetching mouvements by compte:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    next(new ApiError(httpStatusCodes.INTERNAL_SERVER_ERROR.code, 'Erreur lors de la récupération des mouvements'));
   }
 }
 
-exports.getSoldeByCompte = async (req, res) => {
+exports.getSoldeByCompte = async (req, res, next) => {
   try {
     const { idCompte } = req.params;
     const idUtilisateur = req.user.idUtilisateur;
     const solde = await dbPersonnes.getSoldeByCompte(idCompte, idUtilisateur);
-    return res.status(200).json(solde);
+    if (solde === null) {
+      return next(new ApiError(httpStatusCodes.NOT_FOUND.code, 'Solde non trouvé pour ce compte'));
+    }
+    return res.status(httpStatusCodes.OK.code).json(solde);
   } catch (error) {
-    console.error('Error fetching solde by compte:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    next(new ApiError(httpStatusCodes.INTERNAL_SERVER_ERROR.code, 'Erreur lors de la récupération du solde'));
   }
 }

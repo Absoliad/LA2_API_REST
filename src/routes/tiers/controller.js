@@ -1,96 +1,102 @@
 const dbTiers = require('./db');
-
-exports.getAllTiers = async (req, res) => {
+const ApiError = require('../../middlewares/ApiError');
+const httpStatusCodes = require('../../middlewares/httpStatusCodes');
+exports.getAllTiers = async (req, res, next) => {
   try {
     const result = await dbTiers.getAllTiers(req.user.idUtilisateur);
-    res.status(200).json(result);
+    res.status(httpStatusCodes.OK.code).json(result);
   } catch (error) {
     console.error('Erreur getAllTiers :', error);
-    res.status(500).json({ error: 'Erreur serveur' });
+    next(new ApiError(httpStatusCodes.INTERNAL_SERVER_ERROR.code, error.message));
   }
 };
 
-exports.getTiersById = async (req, res) => {
+exports.getTiersById = async (req, res, next) => {
   try {
     const { idTiers } = req.params;
     const result = await dbTiers.getTiersById(idTiers, req.user.idUtilisateur);
 
     if (!result) {
-      return res.status(404).json({ error: 'Tiers non trouvé' });
+      throw new ApiError(httpStatusCodes.NOT_FOUND.code, 'Tiers non trouvé');
     }
 
-    res.status(200).json(result);
+    res.status(httpStatusCodes.OK.code).json(result);
   } catch (error) {
     console.error('Erreur getTiersById :', error);
-    res.status(500).json({ error: 'Erreur serveur' });
+    next(error instanceof ApiError ? error : new ApiError(httpStatusCodes.INTERNAL_SERVER_ERROR.code, error.message));
   }
 };
 
-exports.createTiers = async (req, res) => {
+exports.createTiers = async (req, res, next) => {
   try {
     const data = req.body;
     const result = await dbTiers.createTiers(data);
-
-    res.status(201).location(`/tiers/${result.idTiers}`).send();
+    if (!result || !result.idTiers) {
+      throw new ApiError(httpStatusCodes.INTERNAL_SERVER_ERROR.code, 'Erreur lors de la création du tiers');
+    }
+    res.status(httpStatusCodes.CREATED.code).location(`/tiers/${result.idTiers}`).send();
   } catch (error) {
     console.error('Erreur createTiers :', error);
 
     if (error.code === 'USER_NOT_FOUND') {
-      return res.status(404).json({ error: error.message });
+      return next(new ApiError(httpStatusCodes.NOT_FOUND, error.message));
     }
 
-    res.status(500).json({ error: 'Erreur serveur' });
+    next(new ApiError(httpStatusCodes.INTERNAL_SERVER_ERROR, error.message));
   }
 };
 
-exports.deleteTiers = async (req, res) => {
+exports.deleteTiers = async (req, res, next) => {
   try {
     const idTiers = parseInt(req.body.idTiers || req.query.idTiers, 10);
 
     if (isNaN(idTiers) || idTiers <= 0) {
-      return res.status(400).json({ error: 'idTiers doit être un entier positif' });
+      throw new ApiError(httpStatusCodes.BAD_REQUEST, 'idTiers doit être un entier positif');
     }
 
-    await dbTiers.deleteTiers(idTiers);
+    const result = await dbTiers.deleteTiers(idTiers);
+    if (!result) {
+      throw new ApiError(httpStatusCodes.NOT_FOUND, 'Tiers non trouvé');
+    }
 
-    res.status(204).send();
+    res.status(httpStatusCodes.NO_CONTENT.code).send();
   } catch (error) {
     console.error('Erreur deleteTiers :', error);
 
     if (error.code === 'TIERS_NOT_FOUND') {
-      return res.status(404).json({ error: error.message });
+      return next(new ApiError(httpStatusCodes.NOT_FOUND, error.message));
     }
 
-    res.status(500).json({ error: 'Erreur serveur' });
+    next(error instanceof ApiError ? error : new ApiError(httpStatusCodes.INTERNAL_SERVER_ERROR, error.message));
   }
 };
 
-exports.updateTiers = async (req, res) => {
+exports.updateTiers = async (req, res, next) => {
   try {
     const idTiers = parseInt(req.params.idTiers, 10);
     if (isNaN(idTiers) || idTiers <= 0) {
-      return res.status(400).json({ error: 'idTiers doit être un entier positif' });
+      throw new ApiError(httpStatusCodes.BAD_REQUEST, 'idTiers doit être un entier positif');
     }
 
     const data = req.body;
     const result = await dbTiers.updateTiers(idTiers, data);
 
     if (!result) {
-      return res.status(404).json({ error: 'Tiers non trouvé' });
+      throw new ApiError(httpStatusCodes.NOT_FOUND, 'Tiers non trouvé');
     }
 
-    res.status(204).location(`/tiers/${idTiers}`).send();
+    res.status(httpStatusCodes.NO_CONTENT.code).location(`/tiers/${idTiers}`).send();
   } catch (error) {
     console.error('Erreur updateTiers :', error);
 
     if (error.code === 'USER_NOT_FOUND' || error.code === 'TIERS_NOT_FOUND') {
-      return res.status(404).json({ error: error.message });
+      return next(new ApiError(httpStatusCodes.NOT_FOUND, error.message));
     }
 
     if (error.message === 'Aucun champ à mettre à jour') {
-      return res.status(400).json({ error: error.message });
+      return next(new ApiError(httpStatusCodes.BAD_REQUEST, error.message));
     }
 
-    res.status(500).json({ error: 'Erreur serveur' });
+    next(error instanceof ApiError ? error : new ApiError(httpStatusCodes.INTERNAL_SERVER_ERROR, error.message));
   }
 };

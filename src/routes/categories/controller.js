@@ -1,8 +1,10 @@
 const dbPersonnes = require('./db');
 const argon2 = require("argon2");
 const jwt = require('jsonwebtoken');
+const httpStatusCodes = require('../../middlewares/httpStatusCodes');
+const ApiError = require('../../middlewares/ApiError');
 
-exports.getAllCategories = async (req, res) => {
+exports.getAllCategories = async (req, res, next) => {
   try {
     const idUtilisateur = req.user.idUtilisateur;
     const fields = req.query.fields;
@@ -10,36 +12,36 @@ exports.getAllCategories = async (req, res) => {
       idUtilisateur,
       fields,
     });
-    return res.status(200).json(categories);
+    return res.status(httpStatusCodes.OK.code).json(categories);
   } catch (error) {
-    console.error('Error fetching categories:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    next(new ApiError(httpStatusCodes.INTERNAL_SERVER_ERROR.code, 'Error fetching categories'));
   }
 }
 
-exports.getCategorieById = async (req, res) => {
+exports.getCategorieById = async (req, res, next) => {
   try {
     const idCategorie = req.params.idCategorie;
     const idUtilisateur = req.user.idUtilisateur;
     const categorie = await dbPersonnes.getCategorieById(idCategorie, idUtilisateur);
     if (!categorie) {
-      return res.status(404).json({ message: 'Category not found' });
+      return next(new ApiError(httpStatusCodes.NOT_FOUND.code, 'Category not found'));
     }
-    return res.status(200).json(categorie);
+    return res.status(httpStatusCodes.OK.code).json(categorie);
   } catch (error) {
-    console.error('Error fetching category by ID:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    next(new ApiError(httpStatusCodes.INTERNAL_SERVER_ERROR.code, 'Error fetching category by ID'));
   }
 }
 
-exports.getSousCategoriesByCategorieId = async (req, res) => {
+exports.getSousCategoriesByCategorieId = async (req, res, next) => {
   try {
     const idCategorie = req.params.idCategorie;
     const idUtilisateur = req.user.idUtilisateur;
     const sousCategories = await dbPersonnes.getSousCategoriesByCategorieId(idCategorie, idUtilisateur);
-    return res.status(200).json(sousCategories);
+    if (!sousCategories || sousCategories.length === 0) {
+      return next(new ApiError(httpStatusCodes.NOT_FOUND.code, 'No sous-categories found for this category'));
+    }
+    return res.status(httpStatusCodes.OK.code).json(sousCategories);
   } catch (error) {
-    console.error('Error fetching sous-categories by category ID:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    next(new ApiError(httpStatusCodes.INTERNAL_SERVER_ERROR.code, 'Error fetching sous-categories by category ID'));
   }
 }

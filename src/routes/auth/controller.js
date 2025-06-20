@@ -1,18 +1,20 @@
 const dbPersonnes = require('./db');
 const argon2 = require("argon2");
 const jwt = require('jsonwebtoken');
+const ApiError = require('../../middlewares/ApiError');
+const httpStatusCodes = require('../../middlewares/httpStatusCodes');
 
 exports.login = async (req, res, next) => {
   try {
     const { login, mdp } = req.body;
     const personne = await dbPersonnes.getPersonneByLogin(login);
     if (!personne) {
-      return res.status(401).json({ message: 'Email ou mot de passe incorrect' });
+      return next(new ApiError(httpStatusCodes.UNAUTHORIZED.code, 'Email ou mot de passe incorrect'));
     }
     
     const valid = await argon2.verify(personne.mdp, mdp);
     if (!valid) {
-      return res.status(401).json({ message: 'Email ou mot de passe incorrect' });
+      return next(new ApiError(httpStatusCodes.UNAUTHORIZED.code, 'Email ou mot de passe incorrect'));
     }
     const payload = {
       idUtilisateur: personne.idUtilisateur,
@@ -24,16 +26,16 @@ exports.login = async (req, res, next) => {
       codePostal: personne.codePostal || null,
     };
     const token = jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '12h' });
-    return res.status(200).json({ 
+    return res.status(httpStatusCodes.OK.code).json({ 
       token : token,
       user : {
         idUtilisateur: personne.idUtilisateur,
-      nomUtilisateur: personne.nomUtilisateur,
-      prenomUtilisateur: personne.prenomUtilisateur,
-      login: personne.login,
-      mdp: personne.mdp,
-      ville: personne.ville || null,
-      codePostal: personne.codePostal || null,
+        nomUtilisateur: personne.nomUtilisateur,
+        prenomUtilisateur: personne.prenomUtilisateur,
+        login: personne.login,
+        mdp: personne.mdp,
+        ville: personne.ville || null,
+        codePostal: personne.codePostal || null,
       }
     });
   } catch (err) {
@@ -47,7 +49,7 @@ exports.register = async (req, res, next) => {
     // Vérifier si l'utilisateur existe déjà
     const existingUser = await dbPersonnes.getPersonneByLogin(login);
     if (existingUser) {
-      return res.status(400).json({ message: 'Utilisateur déjà existant' });
+      return next(new ApiError(httpStatusCodes.BAD_REQUEST.code, 'Utilisateur déjà existant'));
     }
     
     // Hacher le mot de passe
@@ -61,7 +63,7 @@ exports.register = async (req, res, next) => {
       password_hash: passwordHash
     });
     
-    return res.status(201).json({ 
+    return res.status(httpStatusCodes.CREATED.code).json({ 
       message: 'Utilisateur créé avec succès',
       user: {
         idUtilisateur: newUser.idUtilisateur,

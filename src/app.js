@@ -4,6 +4,7 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const http = require('http');
+const errorHandler = require('./middlewares/errorHandler'); // Import du middleware
 
 // Swagger
 const swaggerUi = require('swagger-ui-express');
@@ -30,16 +31,8 @@ app.use((req, res, next) => {
   next(createError(404));
 });
 
-// Error handler (sans render !)
-app.use((err, req, res, next) => {
-  const status = err.status || 500;
-  const isDev = req.app.get('env') === 'development';
-
-  res.status(status).json({
-    message: err.message,
-    ...(isDev && { stack: err.stack }),
-  });
-});
+// Middleware de gestion d’erreur global (après toutes les routes !)
+app.use(errorHandler);
 
 // Démarrage du serveur
 const port = normalizePort(process.env.PORT || '3000');
@@ -78,3 +71,5 @@ function onListening() {
   const bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
   console.log('Listening on ' + bind);
 }
+
+module.exports = app;
