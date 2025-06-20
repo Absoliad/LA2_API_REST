@@ -146,3 +146,66 @@ exports.getVirementsByCompteAndCategorieAndSousCategorie = async (idCompte, idCa
         });
     });
 };  
+
+exports.getMouvementsByCompteAndCategorie = async (idCompte, idCategorie) => {
+    const query = `
+        SELECT m.*
+        FROM Mouvement m
+        JOIN Categorie c ON m.idCategorie = c.idCategorie
+        WHERE m.idCompte = ? AND m.idCategorie = ?
+    `;
+
+    return new Promise((resolve, reject) => {
+        db.query(query, [idCompte, idCategorie], (err, results) => {
+            if (err) return reject(err);
+            resolve(results);
+        });
+    });
+};
+
+exports.getMouvementsByCompteCategorieSousCategorie = async (idCompte, idCategorie, idSousCategorie) => {
+    const query = `
+        SELECT m.*
+        FROM Mouvement m
+        JOIN Categorie c ON m.idCategorie = c.idCategorie
+        JOIN SousCategorie sc ON m.idSousCategorie = sc.idSousCategorie
+        WHERE m.idCompte = ? AND m.idCategorie = ? AND m.idSousCategorie = ?
+    `;
+
+    return new Promise((resolve, reject) => {
+        db.query(query, [idCompte, idCategorie, idSousCategorie], (err, results) => {
+            if (err) return reject(err);
+            resolve(results);
+        });
+    });
+}
+
+exports.getMouvementsByCompte = async (idCompte) => {
+    const query = `
+        SELECT *
+        FROM Mouvement
+        WHERE idCompte = ?
+    `;
+
+    return new Promise((resolve, reject) => {
+        db.query(query, [idCompte], (err, results) => {
+            if (err) return reject(err);
+            resolve(results);
+        });
+    });
+}
+
+exports.getSoldeByCompte = async (idCompte) => {
+    const query = `
+        SELECT SUM(m.montant) AS solde
+        FROM Mouvement m
+        WHERE m.idCompte = ?
+    `;
+
+    return new Promise((resolve, reject) => {
+        db.query(query, [idCompte], (err, results) => {
+            if (err) return reject(err);
+            resolve(results.length > 0 ? results[0].solde : 0);
+        });
+    });
+}

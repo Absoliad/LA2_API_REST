@@ -102,7 +102,7 @@ router.post(
  *       404:
  *         description: Compte non trouvé
  */
-router.put(
+router.patch(
   '/:idCompte',
   validate(validators.updateCompte),
   controller.updateCompte
@@ -224,4 +224,133 @@ router.get(
   '/:idCompte/categories/:idCategorie/sous-categories/:idSousCategorie/virements',
   controller.getVirementsByCompteCategorieSousCategorie
 );
+
+/**
+ * @swagger
+ * /comptes/{idCompte}/mouvements:
+ *   get:
+ *     summary: Liste les mouvements d'un compte
+ *     tags: [Comptes]
+ *     parameters:
+ *       - in: path
+ *         name: idCompte
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID du compte
+ *     responses:
+ *       200:
+ *         description: Liste des mouvements du compte
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Mouvement'
+ */
+router.get('/:idCompte/mouvements', controller.getMouvementsByCompte);
+
+/**
+ * @swagger
+ * /comptes/{idCompte}/categories/{idCategorie}/mouvements:
+ *   get:
+ *     summary: Liste les mouvements d'un compte pour une catégorie donnée
+ *     tags: [Comptes]
+ *     parameters:
+ *       - in: path
+ *         name: idCompte
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID du compte
+ *       - in: path
+ *         name: idCategorie
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID de la catégorie
+ *     responses:
+ *       200:
+ *         description: Liste des mouvements du compte pour la catégorie
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Mouvement'
+ */
+router.get(
+  '/:idCompte/categories/:idCategorie/mouvements',
+  controller.getMouvementsByCompteAndCategorie
+);
+
+/**
+ * @swagger
+ * /comptes/{idCompte}/categories/{idCategorie}/sous-categories/{idSousCategorie}/mouvements:
+ *   get:
+ *     summary: Liste les mouvements d'un compte pour une sous-catégorie donnée
+ *     tags: [Comptes]
+ *     parameters:
+ *       - in: path
+ *         name: idCompte
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID du compte
+ *       - in: path
+ *         name: idCategorie
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID de la catégorie
+ *       - in: path
+ *         name: idSousCategorie
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID de la sous-catégorie
+ *     responses:
+ *       200:
+ *         description: Liste des mouvements du compte pour la sous-catégorie
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Mouvement'
+ */
+router.get(
+  '/:idCompte/categories/:idCategorie/sous-categories/:idSousCategorie/mouvements',
+  controller.getMouvementsByCompteCategorieSousCategorie
+);
+
+/**
+ * @swagger
+ * /comptes/{idCompte}/solde:
+ *   get:
+ *     summary: Récupère le solde d'un compte
+ *     tags: [Comptes]
+ *     parameters:
+ *       - in: path
+ *         name: idCompte
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID du compte
+ *     responses:
+ *       200:
+ *         description: Solde du compte
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 solde:
+ *                   type: number
+ *                   format: float
+ *                   description: Solde du compte
+ *       404:
+ *         description: Compte non trouvé
+ */
+router.get('/:idCompte/solde', controller.getSoldeByCompte);
 module.exports = router;
