@@ -1,5 +1,7 @@
 const dbVirement = require('../../../routes/virements/db');
 const controller = require('../../../routes/virements/controller');
+const ApiError = require('../../../middlewares/ApiError');
+const httpStatusCodes = require('../../../middlewares/httpStatusCodes');
 
 jest.mock('../../../routes/virements/db');
 
@@ -38,7 +40,7 @@ describe('Virement Controller', () => {
       await controller.createVirement(req, res, next);
 
       expect(res.location).toHaveBeenCalledWith('/virements/123');
-      expect(res.status).toHaveBeenCalledWith(201);
+      expect(res.status).toHaveBeenCalledWith(httpStatusCodes.CREATED.code);
       expect(res.json).toHaveBeenCalledWith({
         message: 'Virement créé avec succès ainsi que les mouvements associés',
         virement: mockVirementData[0]
@@ -62,7 +64,7 @@ describe('Virement Controller', () => {
 
       await controller.getAllVirements(req, res, next);
 
-      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.status).toHaveBeenCalledWith(httpStatusCodes.OK.code);
       expect(res.json).toHaveBeenCalledWith(mockVirements);
     });
 
@@ -84,18 +86,20 @@ describe('Virement Controller', () => {
 
       await controller.deleteVirement(req, res, next);
 
-      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.status).toHaveBeenCalledWith(httpStatusCodes.OK.code);
       expect(res.json).toHaveBeenCalledWith({ message: 'Virement supprimé avec succès' });
     });
 
-    test('devrait retourner 404 si le virement n\'existe pas', async () => {
+    test('devrait appeler next avec ApiError 404 si le virement n\'existe pas', async () => {
       req.params.idVirement = '999';
       dbVirement.getVirementById.mockResolvedValue([]);
 
       await controller.deleteVirement(req, res, next);
 
-      expect(res.status).toHaveBeenCalledWith(404);
-      expect(res.json).toHaveBeenCalledWith({ message: 'Virement non trouvé' });
+      expect(next).toHaveBeenCalledWith(expect.any(ApiError));
+      const error = next.mock.calls[0][0];
+      expect(error.statusCode).toBe(httpStatusCodes.NOT_FOUND.code);
+      expect(error.message).toBe('Virement non trouvé');
     });
 
     test('devrait appeler next en cas d\'erreur', async () => {
@@ -113,28 +117,31 @@ describe('Virement Controller', () => {
       req.params.idVirement = '123';
       req.body.idCategorie = 2;
       const updatedVirement = [{ id: 123, idCategorie: 2 }];
-      dbVirement.getVirementById.mockResolvedValueOnce([{}]);
+      dbVirement.getVirementById
+        .mockResolvedValueOnce([{}]) // avant update
+        .mockResolvedValueOnce(updatedVirement); // après update
       dbVirement.updateVirement.mockResolvedValue();
-      dbVirement.getVirementById.mockResolvedValueOnce(updatedVirement);
 
       await controller.updateVirement(req, res, next);
 
       expect(res.location).toHaveBeenCalledWith('/virements/123');
-      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.status).toHaveBeenCalledWith(httpStatusCodes.OK.code);
       expect(res.json).toHaveBeenCalledWith({
         message: 'Virement mis à jour avec succès',
         virement: updatedVirement[0]
       });
     });
 
-    test('devrait retourner 404 si le virement n\'existe pas', async () => {
+    test('devrait appeler next avec ApiError 404 si le virement n\'existe pas', async () => {
       req.params.idVirement = '999';
       dbVirement.getVirementById.mockResolvedValue([]);
 
       await controller.updateVirement(req, res, next);
 
-      expect(res.status).toHaveBeenCalledWith(404);
-      expect(res.json).toHaveBeenCalledWith({ message: 'Virement non trouvé' });
+      expect(next).toHaveBeenCalledWith(expect.any(ApiError));
+      const error = next.mock.calls[0][0];
+      expect(error.statusCode).toBe(httpStatusCodes.NOT_FOUND.code);
+      expect(error.message).toBe('Virement non trouvé');
     });
 
     test('devrait appeler next en cas d\'erreur', async () => {
