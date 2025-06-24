@@ -1,124 +1,123 @@
-const dbCategories = require("../../../services/dbCategories");
-const { getAllCategories, createCategorie, updateCategorie, deleteCategorie } = require("../../../controllers/categorieController");
-const { NotFoundError, DuplicateKey } = require("../../../middlewares/errorMiddleware");
+const dbPersonnes = require('../../../routes/categories/db');
+const controller = require('../../../routes/categories/controller');
+const httpStatusCodes = require('../../../middlewares/httpStatusCodes');
+const ApiError = require('../../../middlewares/ApiError');
 
-jest.mock("../../../services/dbCategories", () => ({
-  getAllCategories: jest.fn(),
-  createCategorie: jest.fn(),
-  updateCategorie: jest.fn(),
-  deleteCategorie: jest.fn(),
-}));
+jest.mock('../../../routes/categories/db');
 
-describe("Categorie Controller", () => {
-  let res;
-  let next;
+describe('Categorie Controller', () => {
+  let req, res, next;
 
   beforeEach(() => {
+    req = {
+      params: {},
+      query: {},
+      user: { idUtilisateur: 1 }
+    };
     res = {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    next = jest.fn(); // Mock de `next` pour passer l'erreur au middleware
+    next = jest.fn();
   });
 
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  test("getAllCategories - devrait retourner toutes les catégories avec un code 200", async () => {
-    const mockResults = [
-      { id: 1, nom: "Catégorie 1" },
-      { id: 2, nom: "Catégorie 2" },
-    ];
-    dbCategories.getAllCategories.mockResolvedValue(mockResults);
+  describe('getAllCategories', () => {
+    test('retourne 200 avec les catégories', async () => {
+      const categories = [{ idCategorie: 1 }, { idCategorie: 2 }];
+      dbPersonnes.getAllCategories.mockResolvedValue(categories);
 
-    const req = { query: {} };
-    await getAllCategories(req, res, next);
+      await controller.getAllCategories(req, res, next);
 
-    expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith(mockResults);
+      expect(res.status).toHaveBeenCalledWith(httpStatusCodes.OK.code);
+      expect(res.json).toHaveBeenCalledWith(categories);
+    });
+
+    test('retourne 200 avec tableau vide si aucune catégorie', async () => {
+      dbPersonnes.getAllCategories.mockResolvedValue([]);
+
+      await controller.getAllCategories(req, res, next);
+
+      expect(res.status).toHaveBeenCalledWith(httpStatusCodes.OK.code);
+      expect(res.json).toHaveBeenCalledWith([]);
+    });
+
+    test('appelle next avec ApiError 500 en cas d\'erreur', async () => {
+      dbPersonnes.getAllCategories.mockRejectedValue(new Error('Erreur DB'));
+
+      await controller.getAllCategories(req, res, next);
+
+      expect(next).toHaveBeenCalledWith(expect.any(ApiError));
+      expect(next.mock.calls[0][0].statusCode).toBe(httpStatusCodes.INTERNAL_SERVER_ERROR.code);
+    });
   });
 
-  test("getAllCategories - devrait retourner 404 si aucune catégorie n'est trouvée", async () => {
-    dbCategories.getAllCategories.mockResolvedValue([]);
+  describe('getCategorieById', () => {
+    test('retourne 200 avec la catégorie', async () => {
+      const categorie = { idCategorie: 1, nom: 'Alimentation' };
+      dbPersonnes.getCategorieById.mockResolvedValue(categorie);
+      req.params.idCategorie = '1';
 
-    const req = { query: {} };
-    await getAllCategories(req, res, next);
+      await controller.getCategorieById(req, res, next);
 
-    expect(next).toHaveBeenCalledWith(expect.any(NotFoundError)); // Vérifie que `next` est appelé avec l'erreur `NotFoundError`
+      expect(res.status).toHaveBeenCalledWith(httpStatusCodes.OK.code);
+      expect(res.json).toHaveBeenCalledWith(categorie);
+    });
+
+    test('appelle next avec ApiError 404 si non trouvée', async () => {
+      dbPersonnes.getCategorieById.mockResolvedValue(null);
+      req.params.idCategorie = '99';
+
+      await controller.getCategorieById(req, res, next);
+
+      expect(next).toHaveBeenCalledWith(expect.any(ApiError));
+      expect(next.mock.calls[0][0].statusCode).toBe(httpStatusCodes.NOT_FOUND.code);
+    });
+
+    test('appelle next avec ApiError 500 en cas d\'erreur', async () => {
+      dbPersonnes.getCategorieById.mockRejectedValue(new Error('Erreur'));
+
+      req.params.idCategorie = '1';
+      await controller.getCategorieById(req, res, next);
+
+      expect(next).toHaveBeenCalledWith(expect.any(ApiError));
+      expect(next.mock.calls[0][0].statusCode).toBe(httpStatusCodes.INTERNAL_SERVER_ERROR.code);
+    });
   });
 
-  test("createCategorie - devrait créer une catégorie et retourner un code 200", async () => {
-    dbCategories.createCategorie.mockResolvedValue();
+  describe('getSousCategoriesByCategorieId', () => {
+    test('retourne 200 avec sous-catégories', async () => {
+      const sousCategories = [{ idSousCategorie: 1 }, { idSousCategorie: 2 }];
+      dbPersonnes.getSousCategoriesByCategorieId.mockResolvedValue(sousCategories);
+      req.params.idCategorie = '1';
 
-    const req = { query: { nom: "Nouvelle Catégorie", idAgence: 1 } };
-    await createCategorie(req, res, next);
+      await controller.getSousCategoriesByCategorieId(req, res, next);
 
-    expect(res.status).toHaveBeenCalledWith(200);
-  });
+      expect(res.status).toHaveBeenCalledWith(httpStatusCodes.OK.code);
+      expect(res.json).toHaveBeenCalledWith(sousCategories);
+    });
 
-  test("createCategorie - devrait retourner 409 si la catégorie existe déjà", async () => {
-    const error = new DuplicateKey("Duplicate key error");
-    dbCategories.createCategorie.mockRejectedValue(error);
+    test('retourne 200 avec tableau vide si aucune sous-catégorie', async () => {
+      dbPersonnes.getSousCategoriesByCategorieId.mockResolvedValue([]);
+      req.params.idCategorie = '1';
 
-    const req = { query: { nom: "Existant", idAgence: 1 } };
-    await createCategorie(req, res, next);
+      await controller.getSousCategoriesByCategorieId(req, res, next);
 
-    expect(next).toHaveBeenCalledWith(error); // Vérifie que `next` est appelé avec l'erreur DuplicateKey
-  });
+      expect(res.status).toHaveBeenCalledWith(httpStatusCodes.OK.code);
+      expect(res.json).toHaveBeenCalledWith([]);
+    });
 
-  test("createCategorie - devrait gérer une erreur serveur et retourner un code 500", async () => {
-    dbCategories.createCategorie.mockRejectedValue(new Error("Erreur serveur"));
+    test('appelle next avec ApiError 500 si erreur', async () => {
+      dbPersonnes.getSousCategoriesByCategorieId.mockRejectedValue(new Error('Erreur DB'));
+      req.params.idCategorie = '1';
 
-    const req = { query: {} };
-    await createCategorie(req, res, next);
+      await controller.getSousCategoriesByCategorieId(req, res, next);
 
-    expect(next).toHaveBeenCalledWith(expect.any(Error)); // Vérifie que `next` est appelé avec une erreur générique
-  });
-
-  test("updateCategorie - devrait modifier une catégorie et retourner un code 200", async () => {
-    dbCategories.updateCategorie.mockResolvedValue();
-
-    const req = { query: { id: 1, nom: "Catégorie Modifiée" } };
-    await updateCategorie(req, res, next);
-
-    expect(res.status).toHaveBeenCalledWith(200);
-  });
-
-  test("updateCategorie - devrait retourner 409 si la catégorie existe déjà", async () => {
-    const error = new DuplicateKey("Duplicate key error");
-    dbCategories.updateCategorie.mockRejectedValue(error);
-
-    const req = { query: { id: 1, nom: "Existant" } };
-    await updateCategorie(req, res, next);
-
-    expect(next).toHaveBeenCalledWith(error); // Vérifie que `next` est appelé avec l'erreur DuplicateKey
-  });
-
-  test("updateCategorie - devrait gérer une erreur serveur et retourner un code 500", async () => {
-    dbCategories.updateCategorie.mockRejectedValue(new Error("Erreur serveur"));
-
-    const req = { query: {} };
-    await updateCategorie(req, res, next);
-
-    expect(next).toHaveBeenCalledWith(expect.any(Error)); // Vérifie que `next` est appelé avec une erreur générique
-  });
-
-  test("deleteCategorie - devrait supprimer une catégorie et retourner un code 200", async () => {
-    dbCategories.deleteCategorie.mockResolvedValue();
-
-    const req = { query: { id: 1 } };
-    await deleteCategorie(req, res, next);
-
-    expect(res.status).toHaveBeenCalledWith(200);
-  });
-
-  test("deleteCategorie - devrait gérer une erreur serveur et retourner un code 500", async () => {
-    dbCategories.deleteCategorie.mockRejectedValue(new Error("Erreur serveur"));
-
-    const req = { query: {} };
-    await deleteCategorie(req, res, next);
-
-    expect(next).toHaveBeenCalledWith(expect.any(Error)); // Vérifie que `next` est appelé avec une erreur générique
+      expect(next).toHaveBeenCalledWith(expect.any(ApiError));
+      expect(next.mock.calls[0][0].statusCode).toBe(httpStatusCodes.INTERNAL_SERVER_ERROR.code);
+    });
   });
 });

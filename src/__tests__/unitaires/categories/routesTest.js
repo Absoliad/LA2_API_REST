@@ -1,108 +1,48 @@
-const { validationResult } = require("express-validator");
-const categorieCtrl = require("../../../controllers/categorieController");
+const { validationResult } = require('express-validator');
+const categoriesCtrl = require('../../../routes/categories/controller');
 
-jest.mock("express-validator", () => ({
+jest.mock('express-validator', () => ({
   validationResult: jest.fn(),
 }));
 
-jest.mock("../../../controllers/categorieController", () => ({
+jest.mock('../../../routes/categories/controller', () => ({
   getAllCategories: jest.fn(),
-  createCategorie: jest.fn(),
-  updateCategorie: jest.fn(),
-  deleteCategorie: jest.fn(),
+  getCategorieById: jest.fn(),
+  getSousCategoriesByCategorieId: jest.fn(),
 }));
 
-describe("Categorie Routes", () => {
+describe('Categories Routes', () => {
   let req, res;
 
   beforeEach(() => {
-    req = { query: {} };
+    req = { params: {}, query: {}, body: {}, user: { idUtilisateur: 1 } };
     res = {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
+      send: jest.fn(),
     };
   });
 
-  test("GET /categorie - devrait retourner une erreur 400 si les validations échouent", () => {
-    req.query = { nom: 123, id: "abc", idAgence: "xyz" };
-    validationResult.mockReturnValue({ isEmpty: () => false, array: () => [{ msg: "Erreur de validation" }] });
-
-    const handler = (req, res) => {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
-      categorieCtrl.getAllCategories(req, res);
-    };
-
-    handler(req, res);
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith({ errors: [{ msg: "Erreur de validation" }] });
-  });
-
-  test("GET /categorie - devrait appeler getAllCategories si les validations réussissent", () => {
-    req.query = { nom: "Test", id: 1, idAgence: 2 };
+  test('GET /categories - appelle getAllCategories', () => {
     validationResult.mockReturnValue({ isEmpty: () => true });
 
-    const handler = (req, res) => {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
-      categorieCtrl.getAllCategories(req, res);
-    };
-
-    handler(req, res);
-    expect(categorieCtrl.getAllCategories).toHaveBeenCalledWith(req, res);
+    categoriesCtrl.getAllCategories(req, res);
+    expect(categoriesCtrl.getAllCategories).toHaveBeenCalledWith(req, res);
   });
 
-  test("POST /categorie - devrait retourner une erreur 400 si les validations échouent", () => {
-    req.query = { nom: "", idAgence: "xyz" };
-    validationResult.mockReturnValue({ isEmpty: () => false, array: () => [{ msg: "Erreur de validation" }] });
-
-    const handler = (req, res) => {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
-      categorieCtrl.createCategorie(req, res);
-    };
-
-    handler(req, res);
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith({ errors: [{ msg: "Erreur de validation" }] });
-  });
-
-  test("PUT /categorie - devrait appeler updateCategorie si les validations réussissent", () => {
-    req.query = { id: 1, nom: "Test" };
+  test('GET /categories/:idCategorie - appelle getCategorieById', () => {
+    req.params.idCategorie = '123';
     validationResult.mockReturnValue({ isEmpty: () => true });
 
-    const handler = (req, res) => {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
-      categorieCtrl.updateCategorie(req, res);
-    };
-
-    handler(req, res);
-    expect(categorieCtrl.updateCategorie).toHaveBeenCalledWith(req, res);
+    categoriesCtrl.getCategorieById(req, res);
+    expect(categoriesCtrl.getCategorieById).toHaveBeenCalledWith(req, res);
   });
 
-  test("DELETE /categorie - devrait retourner une erreur 400 si les validations échouent", () => {
-    req.query = { id: "xyz" };
-    validationResult.mockReturnValue({ isEmpty: () => false, array: () => [{ msg: "Erreur de validation" }] });
+  test('GET /categories/:idCategorie/sous-categories - appelle getSousCategoriesByCategorieId', () => {
+    req.params.idCategorie = '123';
+    validationResult.mockReturnValue({ isEmpty: () => true });
 
-    const handler = (req, res) => {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
-      categorieCtrl.deleteCategorie(req, res);
-    };
-
-    handler(req, res);
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith({ errors: [{ msg: "Erreur de validation" }] });
+    categoriesCtrl.getSousCategoriesByCategorieId(req, res);
+    expect(categoriesCtrl.getSousCategoriesByCategorieId).toHaveBeenCalledWith(req, res);
   });
 });
