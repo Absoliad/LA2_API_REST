@@ -66,15 +66,6 @@ const options = {
             typeMouvement: { type: 'string', enum: ['D', 'C'], example: 'D', description: 'D pour Débit, C pour Crédit' },
           }
         },
-        CreateCompte: {
-          type: 'object',
-          required: ['descriptionCompte', 'nomBanque'],
-          properties: {
-            descriptionCompte: { type: 'string', example: 'Compte courant' },
-            nomBanque: { type: 'string', example: 'Banque Populaire' },
-            soldeInitial: { type: 'number', example: 1000.00 }
-          }
-        },
         Virement: {
           type: 'object',
           required: ['idCompteDebit', 'idCompteCredit', 'montant', 'dateVirement'],
@@ -108,7 +99,6 @@ const options = {
             idCompte: { type: 'integer', example: 1 },
             nomBanque: { type: 'string', example: 'Banque Populaire' },
             descriptionCompte: { type: 'string', example: 'Compte courant' },
-            solde: { type: 'number', format: 'float', example: 1000.00 },
             dateHeureCreation: { type: 'string', format: 'date-time', example: '2023-10-01T12:00:00Z' },
             dateHeureMAJ: { type: 'string', format: 'date-time', example: '2023-10-01T12:00:00Z' }
           }
