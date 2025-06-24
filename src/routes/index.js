@@ -7,6 +7,13 @@ const TiersRoutes = require("./tiers/routes");
 const mouvementsRoutes = require("./mouvements/routes");
 const categoriesRoutes = require("./categories/routes");
 const virementsRoutes = require("./virements/routes");
+
+router.get("/", (req, res) => {
+  res.status(200).json({
+    message: "Bienvenue dans l'API de gestion de comptes bancaires"
+  });
+});
+
 router.use("/auth" ,authRoutes);
 router.use("/comptes", auth(), comptesRoutes);
 router.use("/tiers", auth(), TiersRoutes);

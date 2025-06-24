@@ -40,6 +40,8 @@ const validate = validations => [
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Mouvement'
+ *       500:
+ *         description: Erreur serveur
  */
 router.get('/', validate(validators.getAllMouvements), controller.getAllMouvements);
 
@@ -69,6 +71,10 @@ router.get('/', validate(validators.getAllMouvements), controller.getAllMouvemen
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Mouvement'
+ *       404:
+ *         description: Mouvement non trouvé
+ *       500:
+ *         description: Erreur serveur
  */
 router.get('/:id', validate(validators.getMouvementById), controller.getMouvementById);
 
@@ -95,6 +101,10 @@ router.get('/:id', validate(validators.getMouvementById), controller.getMouvemen
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Mouvement'
+ *       400:
+ *         description: Le mouvement existe déjà ou données invalides
+ *       500:
+ *         description: Erreur serveur
  */
 router.post('/', validate(validators.addMouvements), controller.addMouvements);
 

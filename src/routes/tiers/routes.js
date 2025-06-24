@@ -22,6 +22,12 @@ const validate = (validations) => [
  *   name: Tiers
  *   description: Gestion des tiers
  */
+/**
+ * @swagger
+ * tags:
+ *   name: Tiers
+ *   description: Gestion des tiers
+ */
 
 /**
  * @swagger
@@ -32,6 +38,8 @@ const validate = (validations) => [
  *     responses:
  *       200:
  *         description: Liste des tiers
+ *       500:
+ *         description: Erreur interne du serveur
  */
 router.get('/', controller.getAllTiers);
 
@@ -53,6 +61,8 @@ router.get('/', controller.getAllTiers);
  *         description: Détails du tiers
  *       404:
  *         description: Tiers non trouvé
+ *       500:
+ *         description: Erreur interne du serveur
  */
 router.get('/:idTiers', controller.getTiersById);
 
@@ -81,6 +91,10 @@ router.get('/:idTiers', controller.getTiersById);
  *     responses:
  *       201:
  *         description: Tiers créé avec succès
+ *       404:
+ *         description: Utilisateur non trouvé
+ *       500:
+ *         description: Erreur lors de la création du tiers
  */
 router.post('/', validate(validators.create), controller.createTiers);
 
@@ -101,10 +115,12 @@ router.post('/', validate(validators.create), controller.createTiers);
  *     responses:
  *       204:
  *         description: Tiers supprimé avec succès
+ *       400:
+ *         description: idTiers doit être un entier positif
  *       404:
  *         description: Tiers non trouvé
- *       400:
- *         description: Paramètre idTiers invalide
+ *       500:
+ *         description: Erreur interne du serveur
  */
 router.delete('/', controller.deleteTiers);
 
@@ -136,12 +152,14 @@ router.delete('/', controller.deleteTiers);
  *                 minimum: 1
  *                 example: 1
  *     responses:
- *       200:
+ *       204:
  *         description: Tiers mis à jour avec succès
  *       400:
- *         description: Données invalides
+ *         description: idTiers doit être un entier positif ou aucun champ à mettre à jour
  *       404:
  *         description: Tiers ou utilisateur non trouvé
+ *       500:
+ *         description: Erreur interne du serveur
  */
 router.patch('/:idTiers', validate(validators.update), controller.updateTiers);
 
