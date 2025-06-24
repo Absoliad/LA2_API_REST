@@ -49,15 +49,12 @@ exports.getCategorieById = async (req, res, next) => {
 }
 
 exports.getSousCategoriesByCategorieId = async (req, res, next) => {
+  const idCategorie = req.params.idCategorie; // <-- déplacé ici
+  const idUtilisateur = req.user.idUtilisateur;
+
   try {
-    const idCategorie = req.params.idCategorie;
-    const idUtilisateur = req.user.idUtilisateur;
-    
     const sousCategories = await dbPersonnes.getSousCategoriesByCategorieId(idCategorie, idUtilisateur);
-    
-    // Un tableau vide est une réponse valide (200)
     return res.status(httpStatusCodes.OK.code).json(sousCategories || []);
-    
   } catch (error) {
     next(new ApiError(
       httpStatusCodes.INTERNAL_SERVER_ERROR.code,
@@ -65,4 +62,4 @@ exports.getSousCategoriesByCategorieId = async (req, res, next) => {
       error
     ));
   }
-}
+};
