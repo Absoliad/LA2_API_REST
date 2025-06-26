@@ -5,6 +5,11 @@ const ApiError = require('../../../middlewares/ApiError');
 
 jest.mock('../../../routes/categories/db');
 
+jest.mock('../../../config/db', () => ({
+  query: jest.fn(),
+}));
+
+
 describe('Categorie Controller', () => {
   let req, res, next;
 

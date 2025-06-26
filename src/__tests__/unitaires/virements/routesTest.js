@@ -12,6 +12,11 @@ jest.mock("../../../routes/virements/controller", () => ({
   deleteVirement: jest.fn(),
 }));
 
+jest.mock('../../../config/db', () => ({
+  query: jest.fn(),
+}));
+
+
 describe("Virement Routes", () => {
   let req, res;
 

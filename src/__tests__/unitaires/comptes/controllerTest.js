@@ -5,6 +5,11 @@ const httpStatusCodes = require('../../../middlewares/httpStatusCodes');
 
 jest.mock('../../../routes/comptes/db');
 
+jest.mock('../../../config/db', () => ({
+  query: jest.fn(),
+}));
+
+
 describe('Compte Controller', () => {
   let req, res, next;
 

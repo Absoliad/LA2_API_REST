@@ -19,6 +19,11 @@ jest.mock('../../../routes/comptes/controller', () => ({
   getSoldeByCompte: jest.fn(),
 }));
 
+jest.mock('../../../config/db', () => ({
+  query: jest.fn(),
+}));
+
+
 describe('Comptes Routes', () => {
   let req, res;
 

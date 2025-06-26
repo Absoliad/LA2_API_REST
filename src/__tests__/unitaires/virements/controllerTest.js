@@ -5,6 +5,11 @@ const httpStatusCodes = require('../../../middlewares/httpStatusCodes');
 
 jest.mock('../../../routes/virements/db');
 
+jest.mock('../../../config/db', () => ({
+  query: jest.fn(),
+}));
+
+
 describe('Virement Controller', () => {
   let req, res, next;
 

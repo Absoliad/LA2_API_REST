@@ -11,6 +11,11 @@ jest.mock("../../../routes/auth/controller", () => ({
   register: jest.fn(),
 }));
 
+jest.mock('../../../config/db', () => ({
+  query: jest.fn(),
+}));
+
+
 describe("Auth Routes", () => {
   let req, res;
 

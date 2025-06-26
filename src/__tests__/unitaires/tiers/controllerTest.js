@@ -10,6 +10,11 @@ const httpStatusCodes = require("../../../middlewares/httpStatusCodes");
 
 jest.mock("../../../routes/tiers/db");
 
+jest.mock('../../../config/db', () => ({
+  query: jest.fn(),
+}));
+
+
 describe("Tiers Controller", () => {
   let req, res, next;
 

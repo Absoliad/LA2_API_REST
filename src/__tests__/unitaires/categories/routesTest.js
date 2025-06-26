@@ -11,6 +11,11 @@ jest.mock('../../../routes/categories/controller', () => ({
   getSousCategoriesByCategorieId: jest.fn(),
 }));
 
+jest.mock('../../../config/db', () => ({
+  query: jest.fn(),
+}));
+
+
 describe('Categories Routes', () => {
   let req, res;
 

@@ -9,6 +9,11 @@ jest.mock('../../../routes/auth/db');
 jest.mock('argon2');
 jest.mock('jsonwebtoken');
 
+jest.mock('../../../config/db', () => ({
+  query: jest.fn(),
+}));
+
+
 describe('Auth Controller', () => {
   let req, res, next;
 

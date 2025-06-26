@@ -4,6 +4,11 @@ const tiersController = require("../../../routes/tiers/controller");
 jest.mock("express-validator");
 jest.mock("../../../routes/tiers/controller");
 
+jest.mock('../../../config/db', () => ({
+  query: jest.fn(),
+}));
+
+
 describe("Tiers Routes", () => {
   let req, res;
 
