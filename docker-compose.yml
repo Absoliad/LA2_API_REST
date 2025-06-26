@@ -1,0 +1,26 @@
+services:
+  db:
+    image: mariadb:latest
+    container_name: db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DATABASE}
+      MYSQL_USER: ${BDD_USER}
+      MYSQL_PASSWORD: ${BDD_PWD}
+
+    volumes:
+      - ./sql-init/:/docker-entrypoint-initdb.d
+    ports:
+      - "${BDD_PORT}:3306"  # port local:container
+    restart: unless-stopped
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: phpmyadmin
+    environment:
+      PMA_ARBITRARY: 1
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+    depends_on:
+      - db
