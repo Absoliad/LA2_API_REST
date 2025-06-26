@@ -34,6 +34,16 @@ describe("Tiers Controller", () => {
     next = jest.fn();
   });
 
+  beforeAll(() => {
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterAll(() => {
+    console.error.mockRestore();
+  });
+
+
+
   afterEach(() => jest.clearAllMocks());
 
   test("getAllTiers - retourne les tiers avec status 200", async () => {
